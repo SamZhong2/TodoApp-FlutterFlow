@@ -288,7 +288,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                                     fontFamily: 'Inter',
                                     letterSpacing: 0.0,
                                   ),
-                          hintText: 'State...',
+                          hintText: 'State of Residency...',
                           hintStyle:
                               FlutterFlowTheme.of(context).labelLarge.override(
                                     fontFamily: 'Inter',
