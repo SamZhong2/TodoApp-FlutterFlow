@@ -1,4 +1,5 @@
 import '/auth/firebase_auth/auth_util.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/backend/backend.dart';
 import '/components/add_task_widget.dart';
 import '/components/task_widget.dart';
@@ -245,6 +246,60 @@ class _TasksWidgetState extends State<TasksWidget> {
                           },
                         );
                       },
+                    ),
+                  ),
+                  Align(
+                    alignment: AlignmentDirectional(0.0, -1.0),
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Text(
+                        _model.apuResponse,
+                        style: FlutterFlowTheme.of(context).bodyMedium.override(
+                              fontFamily: 'Inter',
+                              letterSpacing: 0.0,
+                            ),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: AlignmentDirectional(0.0, -1.0),
+                    child: FFButtonWidget(
+                      onPressed: () async {
+                        _model.apiResultvb3 =
+                            await FetchInspirationalQuoteCall.call();
+
+                        if ((_model.apiResultvb3?.succeeded ?? true)) {
+                          _model.apuResponse =
+                              FetchInspirationalQuoteCall.quote(
+                            (_model.apiResultvb3?.jsonBody ?? ''),
+                          )!;
+                          safeSetState(() {});
+                        } else {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        }
+
+                        safeSetState(() {});
+                      },
+                      text: 'New Quote',
+                      options: FFButtonOptions(
+                        height: 70.0,
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                            16.0, 0.0, 16.0, 0.0),
+                        iconPadding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        color: FlutterFlowTheme.of(context).primary,
+                        textStyle:
+                            FlutterFlowTheme.of(context).labelMedium.override(
+                                  fontFamily: 'Inter',
+                                  letterSpacing: 0.0,
+                                ),
+                        elevation: 0.0,
+                        borderSide: BorderSide(
+                          color: FlutterFlowTheme.of(context).primaryText,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(24.0),
+                      ),
                     ),
                   ),
                 ].divide(SizedBox(height: 12.0)),
