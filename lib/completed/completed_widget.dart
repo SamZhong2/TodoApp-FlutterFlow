@@ -11,6 +11,9 @@ export 'completed_model.dart';
 class CompletedWidget extends StatefulWidget {
   const CompletedWidget({super.key});
 
+  static String routeName = 'completed';
+  static String routePath = '/completed';
+
   @override
   State<CompletedWidget> createState() => _CompletedWidgetState();
 }
@@ -24,6 +27,8 @@ class _CompletedWidgetState extends State<CompletedWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => CompletedModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -77,7 +82,7 @@ class _CompletedWidgetState extends State<CompletedWidget> {
                       },
                       child: Padding(
                         padding: MediaQuery.viewInsetsOf(context),
-                        child: const AddTaskWidget(),
+                        child: AddTaskWidget(),
                       ),
                     );
                   },
@@ -91,89 +96,101 @@ class _CompletedWidgetState extends State<CompletedWidget> {
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 0.0, 0.0),
-                child: Text(
-                  'Completed',
-                  style: FlutterFlowTheme.of(context).headlineMedium.override(
-                        fontFamily: 'Inter',
-                        letterSpacing: 0.0,
-                      ),
-                ),
-              ),
-              Expanded(
-                child: StreamBuilder<List<TasksRecord>>(
-                  stream: queryTasksRecord(
-                    queryBuilder: (tasksRecord) => tasksRecord
-                        .where(
-                          'user',
-                          isEqualTo: currentUserReference,
-                        )
-                        .where(
-                          'completed',
-                          isEqualTo: true,
-                        ),
+        body: Align(
+          alignment: AlignmentDirectional(0.0, 0.0),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: 400.0,
+            ),
+            decoration: BoxDecoration(),
+            child: Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding:
+                        EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 0.0, 0.0),
+                    child: Text(
+                      'Completed',
+                      style:
+                          FlutterFlowTheme.of(context).headlineMedium.override(
+                                fontFamily: 'Inter',
+                                letterSpacing: 0.0,
+                              ),
+                    ),
                   ),
-                  builder: (context, snapshot) {
-                    // Customize what your widget looks like when it's loading.
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: SizedBox(
-                          width: 50.0,
-                          height: 50.0,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              FlutterFlowTheme.of(context).primary,
+                  Expanded(
+                    child: StreamBuilder<List<TasksRecord>>(
+                      stream: queryTasksRecord(
+                        queryBuilder: (tasksRecord) => tasksRecord
+                            .where(
+                              'user',
+                              isEqualTo: currentUserReference,
+                            )
+                            .where(
+                              'completed',
+                              isEqualTo: true,
                             ),
-                          ),
-                        ),
-                      );
-                    }
-                    List<TasksRecord> listViewTasksRecordList = snapshot.data!;
+                      ),
+                      builder: (context, snapshot) {
+                        // Customize what your widget looks like when it's loading.
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: SizedBox(
+                              width: 50.0,
+                              height: 50.0,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  FlutterFlowTheme.of(context).primary,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        List<TasksRecord> listViewTasksRecordList =
+                            snapshot.data!;
 
-                    return ListView.separated(
-                      padding: EdgeInsets.zero,
-                      scrollDirection: Axis.vertical,
-                      itemCount: listViewTasksRecordList.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12.0),
-                      itemBuilder: (context, listViewIndex) {
-                        final listViewTasksRecord =
-                            listViewTasksRecordList[listViewIndex];
-                        return InkWell(
-                          splashColor: Colors.transparent,
-                          focusColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () async {
-                            await listViewTasksRecord.reference
-                                .update(createTasksRecordData(
-                              completed: false,
-                            ));
+                        return ListView.separated(
+                          padding: EdgeInsets.zero,
+                          scrollDirection: Axis.vertical,
+                          itemCount: listViewTasksRecordList.length,
+                          separatorBuilder: (_, __) => SizedBox(height: 12.0),
+                          itemBuilder: (context, listViewIndex) {
+                            final listViewTasksRecord =
+                                listViewTasksRecordList[listViewIndex];
+                            return InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                await listViewTasksRecord.reference
+                                    .update(createTasksRecordData(
+                                  completed: false,
+                                ));
+                              },
+                              child: TaskWidget(
+                                key: Key(
+                                    'Keyckq_${listViewIndex}_of_${listViewTasksRecordList.length}'),
+                                taskDoc: listViewTasksRecord,
+                                checkAction: () async {
+                                  await listViewTasksRecord.reference
+                                      .update(createTasksRecordData(
+                                    completed: false,
+                                  ));
+                                },
+                              ),
+                            );
                           },
-                          child: TaskWidget(
-                            key: Key(
-                                'Keyckq_${listViewIndex}_of_${listViewTasksRecordList.length}'),
-                            taskDoc: listViewTasksRecord,
-                            checkAction: () async {
-                              await listViewTasksRecord.reference
-                                  .update(createTasksRecordData(
-                                completed: false,
-                              ));
-                            },
-                          ),
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                ].divide(SizedBox(height: 12.0)),
               ),
-            ].divide(const SizedBox(height: 12.0)),
+            ),
           ),
         ),
       ),
